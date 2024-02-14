@@ -195,7 +195,7 @@ like this:
 
 The LC-3 architecture has $W = 2^{16}$ or 64 kilo-words of memory, and each word
 is size $N = 16$ bits.  There is a constant defined in the `<stdint.h>` C library
-file named `UINT16_MAX` which is equivalent $\text{UINT16\_MAX} = W = 2^{16} = 65535$ .
+file named `UINT16_MAX` which is equivalent $\text{UINT16MAX} = W = 2^{16} = 65535$ .
 Likewise there is a type defined that holds an unsigned integer 16 bit value
 named `uint16_t`.  All addresses in our LC-3 architecture are 16 bit values that
 we can interpret as unsigned 16 bit integers, thus this type will be the one
