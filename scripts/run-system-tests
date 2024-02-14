@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+# Run all system tests.  We run the tests and capture their standard output (plus any error stream messages)
+# to an output file.  A system test passes if the difference of the output matches a reference/correct example
+# output file.  No differences means the system test passes, but differences indicate problems and the
+# system test fails.
+
+
+# list of system test simulations to run
+tests="sum
+       countdown
+       sumarray"
+NUM_TESTS=3
+
+# directories for input and output files
+progdir="progs"
+outdir="output"
+
+# constants for colored terminal output (https://misc.flogisoft.com/bash/tip_colors_and_formatting)
+GREEN="\e[1m\e[92m" # this is actually bold light green
+RED="\e[1m\e[91m"   # bold light red
+NORMAL="\e[0m"
+
+# create temporary directory for output, remove any old output first
+rm -rf ${outdir}
+mkdir -p ${outdir}
+
+# run all of the system tests
+declare -i passed=0
+for test in $tests
+do
+    progfile=${progdir}/${test}.obj
+    resfile=${progdir}/${test}.res
+    outfile=${outdir}/${test}.out
+
+    ./sim ${progfile} > ${outfile} 2>&1
+
+    # diff returns 0 if files are identical, which means system test passed
+    diff --report-identical-files --brief --ignore-all-space --ignore-blank-lines --ignore-tab-expansion --ignore-case ${outfile} ${resfile} > /dev/null
+
+    if [ $? -eq 0 ]
+    then
+      echo -e "System test ${test}: ${GREEN}PASSED${NORMAL}"
+      passed=$(( passed + 1 ))
+    else
+      echo -e "System test ${test}: ${RED}FAILED${NORMAL}"
+    fi
+done
+
+# display final result of tests, give explicit non-zero exit code on failure so workflow detect failed tests
+if [ ${passed} -eq ${NUM_TESTS} ]
+then
+    echo -e "${GREEN}===============================================================================${NORMAL}"
+    echo -e "${GREEN}All system tests passed    ${NORMAL} (${passed} tests passed of ${NUM_TESTS} system tests)"
+    exit 0
+else
+    echo -e "${RED}===============================================================================${NORMAL}"
+    echo -e "${RED}System test failures detected${NORMAL} (${passed} tests passed of ${NUM_TESTS} system tests)"
+    exit 1
+fi
