@@ -6,7 +6,7 @@ author: 'CSci 450: Computer Architecture'
 # Objectives
 
 In this assignment we will be writing portions of a LC-3 ISA simulator
-in C.  This assignment implement (most) of the 16-bit LC-3 architecture
+in C.  This assignment implements (most) of the 16-bit LC-3 architecture
 as C functions.  These functions parallel what a typical microcode
 level implementation would need to do to support the LC-3 ISA
 in hardware.  By doing this assignments, you should get a better
@@ -18,7 +18,7 @@ when writing implementations targeted at this level of operation
 of a computing machine.  In addition, you will become even
 more familiar with the 16-bit LC-3 instruction set
 architecture (ISA) as we will implement the fetch-decode-execute
-cycle to simulate most all of this machine architecutre in
+cycle to simulate most all of this machine architecture in
 this assignment.
 
 **Questions**
@@ -55,7 +55,7 @@ correctly assembled LC-3 machine instructions, and simulating their
 execution.  By the end of this assignment you will have a working
 register-based microarchitecture simulation capable of interpreting
 and running most of the LC-3 instructions.  The code will be written
-using basic C (C11 standard compiler).
+using basic C (C17/C18 standard compiler).
 
 We will introduce/review C programming in class, concentrating on
 talking about some of the features you will need for this assignment.
@@ -74,7 +74,7 @@ to execute programs written using the
 [LC-3 Computer Architecture](https://en.wikipedia.org/wiki/Little_Computer_3).
 The simulator will be capable of interpreting and executing (a subset
 of) LC-3 machine instruction.  In this assignment we will leave out some
-features from the full LC-3 architecutre.  We will not implement
+features from the full LC-3 architecture.  We will not implement
 interrupt processing, priority levels, processes, status registers,
 privilege modes, or supervisor/user stacks.  These are mostly all
 mechanisms that are necessary for the operating system level of
@@ -86,7 +86,7 @@ Lets review a bit the basic concepts you should have at this point in the
 course in order to implement the LC-3 simulation for this assignment.  The
 LC-3 architectures is based on the stored-program 
 ( [von Neumann architecture](https://en.wikipedia.org/wiki/Von_Neumann_architecture) )
-computer model. Such a store-program computer has 3 basic components,
+computer model. Such a stored-program computer has 3 basic components,
 the **CPU** or processor, a **Main Memory** (RAM) and **input/output devices** (I/O).
 These components are connected using various interconnects or busses in
 a standard computing device.
@@ -123,21 +123,21 @@ machine (FSM) hardcoded as digital circuitry or in ROM.
 
 The Datapath contains the storage registers.  These are quickly
 accessible slots located in the CPU.  For LC-3 these include the 8
-general registers R0 through R7 as well as special registers such as
-the program counter PC and status bits N, Z, P.  The control unit
+general registers `R0` through `R7` as well as special registers such as
+the program counter `PC` and status bits `N`, `Z`, `P`.  The control unit
 basically loads the next instruction from main memory and decodes and
-interprets this instruction.  The execution of the instruciton
+interprets this instruction.  The execution of the instruction
 typically involves loading data from memory into a register,
 performing some change, and putting the changed data back into memory.
 
-The **Main Memory** is really just an array of addressible words.  
+The **Main Memory** is really just an array of addressable words.  
 Each memory word contains either one instruction or data encoded as
 either an ascii character or a twos-complement encoded signed integer.
 In the LC-3 architecture, there are 16 bit addresses, giving up to
-$2^{16}$ or 64Kw (kilowords) of addressible memory.  However each
+$2^{16}$ or 64 Kw (kilowords) of addressable memory.  However each
 "word" in LC-3 is also 16 bits, unlike typical computer memories, so
-the amount of code/data addressible is actually twice as big as a
-typical 64Kb addressible memory.
+the amount of code/data addressable is actually twice as big as a
+typical 64 Kb addressable memory.
 
 The **Input/Output** devices enable communication with the outside
 world.  In our LC-3 simulator, we will use `trap` system calls to
@@ -160,12 +160,12 @@ sure that you have completed the following setup steps:
    and use the build system and development tools.
 4. Confirm that the project builds and runs, though no tests will be
    defined or run initially.  If the project does not build on the first
-   checkout, please inform the instructor.  Confirm that you C++
+   checkout, please inform the instructor.  Confirm that you C/C++
    Intellisense extension is working, and that your code is being
    formatted according to class style standards when files are saved.
 5. You should create the issue for Task 1 and/or for all tasks for the assignment
-   now before beginning the first task.  On your GitHub account, go to issues,
-   and create it/them from the issue templates for the assignment.  Also make
+   now before beginning the first task.  On your GitHub account, go to `Issues`,
+   and create them from the issue templates for the assignment.  Also make
    sure you are linking each issue you create with the `Feedback`
    pull request for the assignment.
 
@@ -187,7 +187,7 @@ like this:
 - We execute the method associated with the given instruction, using a function lookup
   table.
 - We increment the RPC for normal sequential execution and continue with the next
-  fetch-decode-execute.
+  fetch-decode-execute cycle.
 
 ![Example LC-3 Fetch-Decode-Execute](doc/fetch-decode-execute-example.png)
 
@@ -195,7 +195,7 @@ like this:
 
 The LC-3 architecture has $W = 2^{16}$ or 64 kilo-words of memory, and each word
 is size $N = 16$ bits.  There is a constant defined in the `<stdint.h>` C library
-file named `UINT16_MAX` which is equivalent $\text{UINT16MAX} = W = 2^{16} = 65535$ .
+file named `UINT16_MAX` which is equivalent $\text{UINT16\_MAX} = W = 2^{16} = 65535$ .
 Likewise there is a type defined that holds an unsigned integer 16 bit value
 named `uint16_t`.  All addresses in our LC-3 architecture are 16 bit values that
 we can interpret as unsigned 16 bit integers, thus this type will be the one
@@ -225,8 +225,8 @@ function into `lc3vm.h` and the actual implementation into `lc3vm.c`.  These
 functions should both be very simple one lines of code, to either store a given
 value into memory, or to read it out and return it.
 
-You should define the `task1` tests in the `assg03-tests.cpp` file and test
-out that your memory read and write functions work as expected before moving
+You should then `#define` the `task1` tests in the `assg03-tests.cpp` to
+enable the tests of `mem_read()` and `mem_write()`.  Running these unit tests will check that your memory read and write functions work as expected before moving
 on.
 
 Also it is worth mentioning that the registers have also been defined.  You will
@@ -253,7 +253,48 @@ Once you have these functions working and passing the tests, you should
 create a commit and push your work to your assignment repository in order
 to finish this task.
 
-## Task 2: Instruction / Operand Extraction Support Functions
+## Task 2: Sign Extension Function
+
+We will need to write a function (not a macro) to perform the sign
+extension for the required number of bits.  Call this function
+`sign_extend()` for sign extend.  This function takes an `unint16_t`
+value which will be the low order bits that need to be extended.  And
+a second value of type `int` which will be the size or number of bits
+of the 2s complement number we have (call these parameters `bits` and `size` respectively).
+The purpose of the function will be to extend the bit in the sign
+position to all of the bits above it.  So if the size is a 5,
+and we are given bits 0...10101, then the 1 at bit position 4 needs to be
+extended to all higher bit positions 5-15 of the 16 bit 2's complement representation.  This
+function thus returns a `uint16_t` result, which is the `bits` after
+extending the sign bit correctly.  **NOTE**: We are passing in 5 which
+means we have a 5 bit 2's compliment number, but the bit positions are
+numbered 0-4, so the bit at bit position 4 is the sign bit, which needs
+to be extended to bit positions 5-15.
+
+You can implement the `sign_extend()` function like this.  You will need
+to use bit manipulation here, including right shift `>>` left shift `<<`
+bitwise and with a mask `&` and bitwise or with a mask `|`.  If the
+bit at the sign position is a 1, then you need to shift a set of all 1
+bits (0xFFFF) left by the `size`.  This will shift in 0's to the
+bits from position 0 up to the `size`.  Then you need to perform
+a bitwise or `|` of the original bits with this prepared mask.  Any bit that
+was a 1 in the original bits will get set now for the low order bits, and all of the
+high order bits will be 1 from your shift.  If the bit at the `sign_position`
+was a 0 then nothing needs to be done and you can just return the original
+bits.  This is because this funciton assume that all high bits above the
+`sign_position` have already been masked to 0 when this function is called.
+
+**NOTE**: This function does not assume that the the higher bits above the
+number of bits being extended have been cleared or set.  So whether sign
+extending a negative using 1's or a positive using 0's, in both cases you have
+to correctly extend the sign bit up to the higher bit positions.
+
+Once you have implemented your `sign_extend()` function, you should be able to
+pass the test cases in task 2 testing this new function.  When you are
+satisfied, make sure you make a commit and push it to your GitHub
+classroom repository for grading.
+
+## Task 3: Instruction / Operand Extraction Support Preprocessor Macros
 
 As we have seen when looking at the LC-3 architecture, instructions have
 a regular pattern.  Instructions have the same word size as memory, 16 bits.
@@ -262,7 +303,7 @@ simulation.
 
 The LC-3 architecture supports only a limited set of instructions.  The first
 4 bits of every instruction indicate the opcode, thus there are at most
-$2^4 = 16$ possible instructions, of which all but 1 reserved 1 are defined
+$2^4 = 16$ possible instructions, of which all but 1 rare defined
 as opcodes in LC-3.  The remaining 12 bits of each instruction provide 
 parameters, using various addressing modes, for the operation.
 Based on the opcode, we can identify the instruction and understand how to
@@ -270,15 +311,21 @@ Based on the opcode, we can identify the instruction and understand how to
 an actual microcode architecture, these decoding steps of parameters would
 be handled as a sequence of ALU operations.
 
-We will be use C `#define` macros to perform a lot of the low level
-bit extractions in this simulation.  To start with, our first step is
-a macro that will shift an instruction left 12 bits, so that we end up
+We will use C `#define` preprocessor macros to perform a lot of the low level
+bit extractions in this simulation. And some of your macros will reuse the
+`sign_extend()` function from the previous task when we need to get
+a value that will be interpreted as a 2's complement number.
+
+### Macro to extract the opcode instruction
+
+To start with, we need a macro that will shift an instruction right 12 bits, so that we end up
 with only the 4 bit opcode remaining.  The default right shift operator
 in C `>>` performs a logical shift, which shifts 0 into the high
 order bits as it shifts down bits in the operation.  We will give you
-this first one as an example, you will be required to perform the
-remaining extraction macros from the description.  So for example, to
-extract the opcode, we shift an instruction right by 12 bits.
+this first opcode extraction macro as an example, you will be required
+to perform the remaining extraction macros from the description.
+So for example, to extract the opcode, we shift an instruction right by
+12 bits.
 
 ```C
 #define OPC(i) ((i)>>12)
@@ -287,92 +334,75 @@ extract the opcode, we shift an instruction right by 12 bits.
 The parenthesis around `i` and the whole operation are necessary to ensure that
 when this macro is expanded, we don't get unintended consequences because of
 operator precedence rules.  Add the shown macro to `lc3vm.h` and enable the
-task2 tests.  If this extraction operation is working, you should find that
-the task2 tests for the `OPC` operation are passing.
+task3 tests.  If this extraction operation is working, you should find that
+the task3 tests for the `OPC` operation are passing.
+
+### Macros to extract source and destination registers
 
 Given this same idea, we will now define some macros to extract the
-source register, which in many instruction is in bit positions 11-9, source
-register 1 which is in oftenin bit positions 8-7, and source register 2
+destination register, which in many instruction is in bit positions 11-9, source
+register 1 which is in often in bit positions 8-6, and source register 2
 in bit positions 2-0.
 
-Create a macro called `DR` that shifts the bits down 9 positions.  However, which the
-opcode bits are still present after shifting, you also need to perform a bitwise and
-with the result after shifting, so that only the last 3 bit values remain.  So for DR
-shift down by 9 then perform bitwise and with a mask of 0x7 to get the result.  The
-bitwise and operator in C is `&`.
+Start with the source register 2.  Define a macro called `SR2`.  Source register 2 is in the last 3 bits of an instruction, bits 2-0.  So we don't need to shit these bits, we want the 3
+register bits to end up in the 3 least significant bits, and 0's for all higher bits.  So
+for this macro, we need to perform a bitwis and `&` operation.  Using a mask of 
+`0x07` should cause all bits except the bottom 3 to become 0.
 
-Likewise define `SR1` macro that shifts down 6 positions and masks with 0x7 to extract
-the typical source 1 register address.
+Then define a `SR1` macro.  Source register 1 is in bits 8-6.  So you first need to shift
+right 6 positions.  But the bits above 8 in the original instruction contain the opcode and
+destination registers.  So like  you did for `SR2`, once shifted down you have to ensure
+all bits above the bottom 3 are 0 by using a mask.
 
-Then define the `SR2` macro.  Source register 2 is in the last 3 bits of an instruction,
-so no shifting is necessary, you simply need to perform the bitwise and to get the
-last 3 bits.
+Finally create a macro called `DR` to isolate the destination register.  The destination
+register is in bits 11-9.  So first shift the bits right 9 positions.  And then like the
+previous instructions, you need to mask after the shift to ensure only the 3 bits
+of the destination register remain.
 
-These 3 macros are tested in the next 3 test cases for task2.  See that all of those
+These 3 macros are tested in the next 3 test cases for task3.  See that all of those
 tests are passing before continuing on.
 
-The next set of macros are intended to handle the immediate and offset addresses 
+### Macros to extract immediate and offset values
+
+The next set of macros are intended to handle the immediate and offset operands 
 given in many of the instructions.  These include the `imm5` 5 bits of immediate
 value, and `PCoffset9`, `PCoffset11` and `offset6`, which are all values offset from
 either the `PC` or some base register.  In all cases these are the last
 (least significant) bits in the instruction, though of width 5, 6, 9 and 11 bits.
-But also significantly, these all need to be interpreted as twos-complement numbers,
+But also, these all need to be interpreted as twos-complement numbers,
 so that when we use them as values or offsets, we can specify negative values or
 offsets using a twos-complement encoding.  The issue is that, in order to
-prepare interpret these values as twos-complement, we can't simply AND the
+properly interpret these values as twos-complement, we can't simply AND the
 needed bits with a mask.  The result will have 0's in all of the high order bits.
 But if this is a negative number, we instead have to perform a sign extension
-function.  Whatever the most significant bit is, it needs to be shifted into
-all of the higher order bits.
+function.
 
-We will need to write a function (not a macro) to perform the sign
-extension for the required number of bits.  Call this function
-`sign_extend()` for sign extend.  This function takes an `unint16_t`
-value which will be the low order bits that need to be extended.  And
-a second value of type `int` which will be the position of the sign
-bit (call these parameters `bits` and `sign_position` respectively).
-The purpose of the function will be to extend the bit in the sign
-position to all of the bits above it.  So if the sign position is a 5,
-and we are given bits 10101, then the 1 at position 5 needs to be
-extended to all higher bit positions 6-15 of the 15 bit number.  This
-function thus returns a `uint16_t` result, which is the `bits` after
-extending the sign bit correctly.
+Whatever the most significant bit is after masking, it needs to be shifted into
+all of the higher order bits.  So you will reuse your `sign_extend()` function here.
+If it is working properly, it already does the work to correctly mask out the
+needed bits (based on the size), and extend either 0 or 1 as needed to extend
+the 2s complement representation to the full 16 bits.
 
-You can implement the `sign_extend()` function like this.  You will need
-to use bit manipulation here, including right shift `>>` left shift `<<`
-bitwise and with a mask `&` and bitwise or with a mask `|`.  If the
-bit at the sign position is a 1, then you need to shift a set of all 1
-bits (0xFFFF) left by the `sign_position`.  This will shift in 0's to the
-bits from position 0 up to the `sign_position`.  Then you need to perform
-a bitwise or `|` of the original bits with this prepared mask.  Any bit that
-was a 1 in the original bits will get set now for the low order bits, and all of the
-high order bits will be 1 from your shift.  If the bit at the `sign_position`
-was a 0 then nothing needs to be done and you can just return the original
-bits.  This is because this funciton assume that all high bits above the
-`sign_position` have already been masked to 0 when this function is called.
+Create macros called `SEXTIMM`, `OFF6`, `PCOFF9` and `PCOFF11`. These macros will all
+be similar.  All of them should expand to call your `sign_extend()` function on the
+given macro value `i`.  The only difference is that the `SEXTIMM` Should extend
+using a size of 5 bits for the 2's complement number.  Likewise, `OFF6` extends a
+6 bit 2's complement and `PCOFF9` and `PCOFF11` will extend 9 and 11 bit 2's complement
+sized bit patterns.
 
-Once you have implemented your `sign_extend()` function, you should be able to
-pass the test cases in task 3 testing this new function.
+We will add a few more operand extraction functions as needed in later tasks,
+but those are all we will do for Task 3.  Once you have these function/macros
+implemented and passing the tests, make a commit and push your work to your
+GitHub classroom repository.
 
-Now create macros called `IMM5`, `IMM6`, `IMM9` and `IMM11`.  These should simply mask a 
-given value so that only the low 5, 6, 9 and 11 bits are retained respectively, and
-the high order bits are all set to 0.  Then create macros named `SEXTIMM`
-`OFF6`, `PCOFF9`, `PCOFF11`.  These need to call your `sign_extend()` function for the last 5, 6, 9 and 11 bits respectively.  These are used for sign extnsion of last 5 bit as an immediate value, sign extension of a 6 bit offset, and sign extension of 9 and 11 bits that will be added to the `PC`.  The bits needs to be first masked using `IMM5`, `IMM6`,
-`IMM9` and `IMM11` respectively so that all high order bits above the sign bit are
-0 before calling the `sign_extend()` function.
-
-We will add a few more operand extraction functions as needed, but those are all we
-will do for Task 2.  Once you have these function/macros implemented and passing
-the tests, make a commit and push your work to the class repository.
-
-## Task 3: PZN Condition Flags
+## Task 4: PZN Condition Flags
 
 In addition to extracting register addresses and offset values, we will need
 to maintain the condition flags for the LC-3 machine.  Recall that on most all
-operations that modify a register, the NZP condition flags will be update to
+operations that modify a register, the NZP condition flags will be updated to
 reflect if the last operation resulted in a negative result, zero result or positive
 result (where negative or positive are interpreted to mean that the number is
-a twos-complement number and result was wither negative with a 1 in the sign
+a twos-complement number and result was either negative with a 1 in the sign
 bit or positive with a 0 in the sign bit).
 
 If you look in the `lc3vm.h` file you will see that flags for these condition
@@ -383,7 +413,7 @@ enum registr { R0 = 0, R1, R2, R3, R4, R5, R6, R7, RPC, RCND, RCNT };
 enum flags { FP = 1 << 0, FZ = 1 << 1, FN = 1 << 2 };
 ```
 
-We will be using the register named `RCOND` TO HOLD the condition codes.
+We will be using the register named `RCOND` to *hold* the condition codes.
 We are actually only going to be using the least 3 significant bits of
 this register.  But for example we can set the `Z` zero flag condition in 
 this register simply by assigning the flag to our condition codes register:
@@ -395,7 +425,7 @@ reg[RCND] = FZ;
 Only 1 condition, negative, zero or positive can ever be true as the result of
 an operation that modifies a register.
 
-For the task 3, we will create another function named `update_flags()`.
+For the task 4, we will create another function named `update_flags()`.
 This function takes a `enum registr` as its input parameter, which is the
 register that was just modified by an instruction that we have to set the
 condition flags based on.  For example, our microcode might do the following
@@ -405,7 +435,7 @@ update_flags(R2);
 ```
 
 to update the condition codes based on the current result stored in the `R2`
-register.  This function does not return any result, so it is a void
+register.  This function does not return any result, so it is a `void`
 function.  It works by the side effect of changing the `RCND` register to be
 either `FN`, `FZ` or `FP` depending on if the updated register is currently
 negative, zero or positive.  To implement this function, you have to test
@@ -420,24 +450,24 @@ Define the task3 unit tests and implement `update_flags()` as described.  Once
 the tests are passing for task3, you should commit and push your work to your
 assignment repository before moving on to the next task.
 
-## Task 4: Mathematical Operators
+## Task 5: Implement LC-3 Arithmetic/Logic Microcode Operations
 
 We will next implement the microcode for the LC-3 operations as functions.  These
-functions will use the functions and macros (and add some addition ones) to implement
-the microcode steps needed to implement each LC-3 operation.  We can broadly break
+functions will use the functions and macros from your previous tasks (and add some additional ones) to implement
+the microcode steps needed to perform each LC-3 operation.  We can broadly break
 up the LC-3 operations into 4 categories:
 
-1. `add`, `and`, `not` are performing **mathemetical operations** on the data kept in the registers.
+1. `add`, `and`, `not` are performing **arithmetic / logic operations** on the data kept in the registers.
 2. `ld`, `ldr`, `ldi`, `lea` are used to **load data** from main memory to the registers.
 3. `st`, `str`, `sti` are used to **store data** from registers back to main memory.
-4. `br`, `jmp`, `jsr` are used to effect the **flow of control** of our programs, jumping from one instruction to another, or conditionally jumping (rather than the default sequentil execution).
+4. `br`, `jmp`, `jsr` are used to effect the **flow of control** of our programs, jumping from one instruction to another, or conditionally jumping (rather than the default sequential execution).
 
 Here is a summary of the LC-3 opcode specification we will be implementing
 
 | **Instruction** | **OpCode** Hex | **OpCode** Bin | **C function**         | **Comments**                            |
 |-----------------|----------------|----------------|------------------------|-----------------------------------------|
 | `br`            | 0x0            | 0b0000         | void br(uint16_t i)    | Conditional branch                      |
-| `add`           | 0x1            | 0b0001         | void and(uint16_t i)   | Used for addition                       |
+| `add`           | 0x1            | 0b0001         | void add(uint16_t i)   | Used for addition                       |
 | `ld`            | 0x2            | 0b0010         | void ld(uint16_t i)    | Load RPC + offset                       |
 | `st`            | 0x3            | 0b0011         | void st(uint16_t i)    | Store                                   |
 | `jsr`           | 0x4            | 0b0100         | void jsr(uint16_t i)   | Jump to subroutine                      |
@@ -453,7 +483,7 @@ Here is a summary of the LC-3 opcode specification we will be implementing
 | `lea`           | 0xE            | 0b1110         | void lea(uint16_t i)   | Load effective address                  |
 | `trap`          | 0xF            | 0b1111         | void trap(uint16_t i)  | System trap/call                        |
 
-We will start in this task with the mathematical operators `add`, `andlc`, `notlc`.  Because we are using
+We will start in this task with the mathematical / logic operators `add`, `andlc`, `notlc`.  Because we are using
 a C++ testing framework, we have some keyword conflicts using `and` and `not` keywords, thus we
 give slightly modified function names for those opcodes in this assignments.
 
@@ -469,7 +499,7 @@ twos-complement signed value.
 
 Which version that is used depends on the bit at position 5.  There is
 a macro already defined for you, called `FIMM` which tests the "flag" at
-bit 5 that determins if an immediate value or another register is
+bit 5 that determines if an immediate value or another register is
 present (the `and` operator works the same way).
 
 Add a function named `add()` that has the signature shown in the table
@@ -482,11 +512,18 @@ function does.
 To implement `add` first test if `FIMM` is 1.  If it is then 
 the immediate value version of `add` is being performed.  You would
 need to use the `SEXTIMM()` macro which uses your `sign_extend` function
-to extract the second operand.  If `FIMM` is a 0 then there are two
-source registers for operands.
+to extract the second operand. And you would also need to use the `SR1`
+macro to extract the source register number.  The value in the source register
+needs to be looked up from the `reg[]` array, which contains the current values
+of the eight registers `R0` - `R7`.  
+
+ If `FIMM` is a 0 then there are two source registers for operands.  So you
+ would use your `SR1` and `SR2` macros to extract the source register number
+ of the two operands from the `reg[]` array.
 
 In both cases, we can cheat a little bit and simply use the C language
-`+` addition opertor to perform the addition.  Even though the parameters
+`+` addition operator to perform the addition (this would end up enabling an adder
+circuit in a real computer hardware architecture).  Even though the parameters
 and registers are declared as `uint16_t` unsigned 16 bit types, the addition
 will still work and get the expected result, even if we are interpreting
 the bits as signed twos-complement numbers.  The only issue is that the result
@@ -494,20 +531,28 @@ might actually no longer fit into the 16 bit representation.  In some
 architectures, this overflow would be detected and a condition code would
 be set to indicate overflow, but we do not handle that for the LC-3 machine.
 
+The result of the addition should be saved in the destination register, so
+you will need to use the `DR` macro and assignment the result from the
+operation back into the indicated destination register.
+
+Also the `add` operation will cause the condition code flags to update.  So you
+need to call your `update_flags()` function on the destination register after
+performing the operation.
+
 ### and - Bitwise logical AND of two values
 
 Once you have the `add` working, implement the `andlc`.  The logical
 AND operation has exactly the same two modes as the `add` operator.  So
-the code will be identical, except you will need to perform a logical `&`
-operation using the C and operator, rather than addition.  Also, the logical
-and immediate value is signe extended, just like for `add`, for consistency
+the code will be identical, except you will need to perform a logical bitwise and
+operation using the C `&` operator, rather than addition.  Also if an 
+immediate value is used, it is sign extended just like for `add` for consistency
 and because that makes it possible to and immediate values with 1's in the
 higher bits if needed.
 
 ### not - Bitwise logical NOT of a value
 
 Finally for this task implement the `notlc` operator.  The logical NOT
-is simpler than `add` and `andlc`.  It only as a source register and a 
+is simpler than `add` and `andlc`.  It only has a source register and a 
 destination register.  Use the C not operator `~` to perform the operation,
 and again don't forget to update the condition code flags based on the
 result of this operation.
@@ -515,7 +560,11 @@ result of this operation.
 Once you have implemented these three operations and are passing the task4
 tests, commit your work and push it to your assignment repository.
 
-## Task 5: Load Data from Memory Operations
+**NOTE**: These functions were named `andlc` and `notlc` because we are using a C++ framework for
+testing, and `and` and `not` are a keywords in C++. So to avoid errors when using keywords
+as names, we had to choose a slightly different name for these microcode functions.
+
+## Task 6: Load Data from Memory Operations
 
 There are 4 operations to transfer data from memory to a register, though as
 you should know the `lea` actually only calculates an address that might
@@ -527,16 +576,22 @@ all three of these will use the `mem_read()` function you implemented previously
 
 The basic `ld` instruction calculates an address that is an offset from the
 current `RPC` and transfers the data it finds in that address into a destination
-register.  Uncomment the task5 tests and start with the `ld` instruction.  To
-implement, use the `PCOFF9()` macro that you implemented before to interpret the
-9 least significant bits as an offset.  You will add these to the current `RPC`
-register.  As we have seen before, both the offset is treated as a twos-complement
-signed number.  Your `PCOFF9()` macro actually should already be performing sign
-extension.  So you can just add this value (using `+` operator) to the current
-`RPC` to calculate the address to load from.  Don't forget also that for
-`ld` the status flags should be updated by the value that is loaded into
-the destination register. Implement this function so that
-it passes the unit tests for the `ld` operator.
+register.  Uncomment the task5 tests and start with the `ld` instruction.  
+
+To implement this function you have to perform the following steps:
+
+1. You need to calculate the address in memory to load.  The low 9 bits are a
+   pcoffset, so you need to use your `PCOFF9()` macro to extract those, and add that
+   to the current value of the `RPC` program counter register.
+2. The address you calculated by adding some offset to the program counter is the location
+   in memory to read from, so you will need to use your `mem_read()` function.
+3. The value that is read from memory should be stored in the indicated destination
+   register for this instruction, so you need your `DR` macro to save the value into
+   the correct `reg[]`.
+
+Don't forget also that for `ld` the status flags should be updated by the value
+that is loaded into the destination register, so you will again be calling
+the `update_flags()` at the end of this function.
 
 ### ldi - Load indirect
 
@@ -545,17 +600,22 @@ However, the first value that you read from memory will instead be treated as an
 address.  That address is what you ultimately need to read a value from and store
 into the destination register.  Thus you will implement this function
 by calling `mem_read()` two times.  Don't forget again that whatever value
-is ultimated fetched, the status flags need to be updated using this value.
+is ultimately fetched, the status flags need to be updated using this value that
+was indirectly loaded into the destination register.
 
 ### ldr - Load using Base register + offset from Base
 
 This instruction uses an address in a base register (which is in same bits
 we called `SR1` so you can use that macro to get the base register) and adds
-an offset specified by the low 6 bits.  You can use the `OFF6` macro to extract
-the sign extended offset bits here.  The value in the source/base register is offset
-by the `OFF6` bits to form a new address, and this address is read and its value
-is loaded into the destination register.  As usual the status flags will also be
-updated using whatever value is loaded here.
+an offset specified by the low 6 bits.  So you need to 
+
+1. Get the base register address using the `SR1` macro, and add in the offset 6 bits
+   using your `OFF6` macro to calculate the target address.
+2. Read this value from memory using your `mem_read()` function.
+3. Store this value into the destination register indicated by the `DR` macro.
+
+As with the other loads the status flags will also be updated using whatever value is
+fetched into the destination register here.
 
 ### lea - Load Effective Address
 
@@ -563,17 +623,17 @@ This function really is a helper that calculates potentially useful addresses
 and gets those addresses loaded into a register.  So for example we might use
 `lea` to calculate a base address, and then use `ldr` to fetch data at some
 offset from that base register.  So `lea` is simply implemented by adding
-the 9 pc offset bits to the current `RPC` and saving this calculated address into
-the destination register.  So you will again need to use the `PCOFF9` macro 
-in this function, but you will not be using the `mem_read()` function here.
-Also, unlike the other load functions, the status flags are not effected by
+the pc9 offset bits to the current `RPC` and saving this calculated address into
+the destination register (no memory read is performed by this address).
+
+Unlike the other load functions, the status flags are not effected by
 a value being calculated and put into a register by `lea`, so you will not
 be calling `update_flags()` for this function.
 
 Once you have completed the loading functions and are passing the tests for
-task 5, make a commit and push your work to your github classroom repository.
+task 5, make a commit and push your work to your GitHub classroom repository.
 
-## Task 6: Store Data to Memory Operations
+## Task 7: Store Data to Memory Operations
 
 There are 3 operations that transfer a value from a register back to 
 main memory.  These are the basic store to offset from PC `st`, the
@@ -602,29 +662,33 @@ indicated address.
 ### str - Store to base + offset reference
 
 Again the `str` parallels the `ldr`.  There is a base register and a 6 bit
-`PCOFF9` in the instruction.  These values are comined to give an address.
+`PCOFF9` in the instruction.  These values are combined to give an address.
 The value in the source register is then written to this address.
 
 None of the store routines cause the status flags to change, so you will not
 be calling `update_flags()` for any of these routines.  Once you have
-enabled and are passing all of the task6 tests, make a commit and push your
+enabled and are passing all of the task7 tests, make a commit and push your
 work to your github classroom repository.
 
-## Task 7: Control Flow Operations
+## Task 8: Control Flow Operations
 
 As you know, typically the `RPC` register for fetch-decode-execute
-cycles will be auto-incremented when each instrctuion gets executed.
+cycles will be auto-incremented when each instruction gets executed.
 Thus the normal flow of control is to fetch and execute the next
 instruction immediately after the current one being processed.
 
-There are three operations in LC-3 that affect the folow of the
+There are three operations in LC-3 that affect the flow of the
 program control.  The `jmp` instruction performs a simple absolute
 jump based on an address in a register.  The `br` instruction
 allows for conditional branching based on the result
-(FN negative, FZ zero, FP positive) of the last operation that
+(`FN` negative, `FZ` zero, `FP` positive) of the last operation that
 modified a register.  The `br` instruction uses a PCOFF9 9
 bit offset from the current `RPC`, unlike the absolute jump which
-jumps based on an already calculated address in a register.
+jumps based on an already calculated address in a register.  So
+as we discussed in class, a `br` is effectively limited to a
+window of $\pm 255$ from the current `RPC`, while a `jmp`
+allows for a long jump in memory.
+
 Finally the LC-3 architecture supports the notion of
 subroutines (basically same idea as functions). 
 
@@ -639,7 +703,7 @@ same location as our `SR1` source register 1 macro, so
 we will reuse it to obtain the base register address.
 
 Implement the `jmp` instruction as described and enable
-the `task7` tests.  Once the tests are passing for 
+the `task8` tests.  Once the tests are passing for 
 the jump instruction, continue with the other control
 flow instructions.
 
@@ -651,11 +715,11 @@ machine code level in LC-3.  The bits in 11-9 contain
 settings that indicate if the branch should happen if the
 last result was negative (bit 11) zero (bit 10) or 
 positive (bit 9).  These bits correspond with the `DR`
-macro we have defined recently, and we can use that
+macro you have already defined, and we can use that
 macro to extract the given 3 bits.  But these bits need
 to be compared with the bits in the `RCOND` register.  
 Any, none or all of the N,Z,P bits can be set, which allows
-for diferent kinds of conditional branches (or an
+for different kinds of conditional branches (or an
 unconditional branch if all bits are 1).  
 
 The target location of the branch uses the PCOFF9 9 low
@@ -663,12 +727,14 @@ order bits to calculate a new address relative to the
 current `RPC` as we have done for other instructions.
 
 To implement `br`, you need to check the instruction N,Z,P bits
-against the current `RCOND` bits.  You will need a new macro that you
-can call `FCND`.  This macro should extract the bits 11-9 from the
-instruction.  You can do this by left shifting by 9 bits and masking
-with b111 (0x7).  Then you can use a bitwise and `&` operation between
-the two, and if the result is non zero, then the condition was met and
-the branch should be performed.
+against the current `RCOND` bits.  As mentioned, these are in the
+same positions accessed by the `DR` macro, which you can reuse here
+to extract from the instruction.  You have to and `&` together the
+`RND` register and the condition bits in the instruction.  If the
+result is true (non zero) then the flag specified in the instruction
+and the condition code in RCOND must both have been set, so you should
+perform the branch.  If the result end up being false (zero) then you
+do nothing, the conditional branch is not taken.
 
 Implement the `br` instruction and once it is passing
 the unit tests continue on to the final control
@@ -683,27 +749,23 @@ when a jump into a subroutine is performed, the current
 The subroutine has to know it is a subroutine and not
 modify this register.  If we want to support nested or
 recursive subroutines, the routines are responsible for
-maintainint the R7 register return address themselves.
+maintaining the R7 register return address themselves.
 
 There are really two versions of the jump to subroutine.
 Bit 11 is used to indicate if it is a jump into a
 subroutine `jsr`, or a return from the subroutine `jsrr`.
+We have given you a `FL` macro which extract this bit so you can tell
+if it is set so a `jsr` should be performed, or unset, in which case
+we do a `jsrr`.
 
 The pseudo-code for the operation is as follows:
 
 1. We save the `RPC` in `R7` (to *remember* from where we jumped).
-2. If `bit[11]` is set to 0 this is a return, so we set `RPC = BASER`
+2. If `bit[11]` (use `FL` macro) is set to 0 this is a return, so we set `RPC = BASER`
    which will be found in bits 8-6, the `SR1` bits.
 3. else if `bit[11]` is set to 1 this is a jump to another subroutine, so
    we set `RPC = RPC + OFFSET11`.  The low 11 bits can be used as an
-   offset here, so we need a new macro `PCOFF11` to extract these.
-   
-You will need two previously unused macros.  `PCOFF11` already mentioned
-should work the same as `PCOFF9` but use the last 11 bits of the
-instruction.  We also need a macro to explicitly check bit 11 in the
-instruction.  Call this `FL` for flow.  You can implement this macro
-by left shifting 11 bits and maskking with 0x1 to determine if the 11th
-bit is a 0 or 1 for the test here.
+   offset here, so you will use your macro `PCOFF11` to extract these.
 
 The reason that the `RPC` is saved in `R7` but the return specifies
 the register to use to get the next `RPC` is that subroutines can use
@@ -715,12 +777,12 @@ subroutine wants to call another subroutine, it needs to save the
 return address first somewhere.  Then when it is ready to return it
 can specify the location it moved the return address to `jsrr`.
 
-Implement the flow control instructions and get the `task7` tests
+Implement the flow control instructions and get the `task8` tests
 passing.  Once you have completed the instructions and you
 are satisfied with your tests, make a commit and push your
 work to your classroom GitHub repository.
 
-## Task 8: Trap instruction
+## Task 9: Trap instruction
 
 The trap instructions have been given to you, there is nothing to be
 implemented in this section.  But do read the following description of
@@ -733,7 +795,7 @@ is a hook in the ISA that allows the operating system to set up
 special routines for a user to get access to I/O devices
 and I/O routines.
 
-The `trap` instruction takes a single 8 bith `TRAPVECT`.  There is a macro
+The `trap` instruction takes a single 8 bit `TRAPVECT`.  There is a macro
 already defined that extracts the low 8 bits to determine which trap
 vector was invoked.  The trap vector is simply an 8 bit number or code
 that in theory the operating system can use to loop up or direct
@@ -741,7 +803,7 @@ operation to the routine that services that trap.
 
 In the example implementation in this simulator, each trap will be kept in an
 array `trap_ex` that contains pointers to the associated
-C functions.  You will use this same strategy to implemen the
+C functions.  You will use this same strategy to implement the
 fetch-decode-execute main simulation loop, but we keep a separate array
 here of function pointers for the trap instructions.  In a real system, the
 trap service routines would need to be implemented in LC-3 assembly, but here
@@ -769,7 +831,7 @@ since they all start at 0x20, we can subtract this to index into the
 | tinu16      | 0x26         | 6         | Reads a `uint16_t` from the keyboard and stores it in R0.         |
 | toutu16     | 0x27         | 7         | Writes the `uint16_t` found inside R0 to the console.             |
 
-## Task 9: Control Store and Fetch-Decode-Execute Loop
+## Task 10: Control Store and Fetch-Decode-Execute Loop
 
 Congratulations, if you have proceeded this far you basically have all of the
 pieces to implement a functional LC-3 simulator.  The only remaining bit is
@@ -778,12 +840,12 @@ fetch-decode-execute cycle for the simulator.
 
 There is already a 
 
-```
+```C
 bool running = true;
 ```
 
 defined in `lc3vm.[hc]` that controls when the program should halt, and
-`running` is set to `false` when a halt service vector routine is invoked.
+`running` is set to `false` when a halt trap service routine is invoked.
 
 We are going to use an array of function pointers here to simulate the
 microcode lookup of instructions when they are decoded. There is an example
@@ -792,29 +854,30 @@ of such an array given for the trap service routines that you can follow.
 For the opcode function lookup table, there is already a typdef defined in
 `lc3vm.h`:
 
-```
-#define NOPS (16)
+```C
+#define NUMOPS (16)
 typedef void (*op_ex_f)(uint16_t i);
 ```
 
-This means that an opcode execution function has the signautre that it takes
-a single `uint16_t` parameter as input, and it is a void function.  The
-parameter is the instruction that needs further decoding in the opcode execution
-function.
+This means that an opcode execution function has a signature that takes
+a single `uint16_t` parameter as input (the instruction to execute),
+and it is a void function.  The parameter is the instruction that needs
+further decoding in the opcode execution function.
 
 Create an array of `op_ex_f` pointers (see the trap lookup array for an
-example).  This array can hold up to 16 opcode execution functions 
-(use NOPS) definition for the array size).  Add in all of the opcode
+example). This array should be defined below the trap function in your
+`lc3vm.c` source file. This array can hold up to 16 opcode execution functions 
+(use NUMOPS for the array size).  Add in all of the opcode
 execute functions to this array, being careful that you add them in
 the correct order.  For example, `br` has opcode b0000 so it should be at
 index 0 of this table in order to be invoked correctly.  All 16
 functions (including the `res` function for the reserved/unused opcode),
 need to be placed in correct order in this lookup table.
 
-The implement the `start()` function to execute the main
+Then implement the `start()` function to execute the main
 fetch-decode-execute loop for our LC-3 simulation.  Ths function should
 take an `uing16_t` parameter named `offset` as input.  Normal execution
-is to start he RPC at `PC_START` 0x3000.  The offset should be added to
+is to start the RPC at `PC_START` 0x3000.  The offset should be added to
 the `PC_START` and assigned to the `reg[RPC]` before starting the main
 fetch-decode-execute loop.  So for example, if an offset of 0 is specified,
 programs start fetching and executing from the default `PC_START`
@@ -825,7 +888,7 @@ runs as long as `running` is `true`, and stops when `running` is set to `false`.
 The basic steps in the main loop are:
 
 - Fetch the next instruction.  Use `mem_read` to fetch an instruction
-  from memory.  The instruction fetch is the one currently pointed to by
+  from memory.  The instruction fetched is the one currently pointed to by
   the `reg[RPC]` register.
 - Increment the `RPC` by 1 in preparation for the next fetch.  This needs
   to be done before calling the opcode execution function, as all PC
@@ -837,12 +900,12 @@ The basic steps in the main loop are:
   Invoke the opcode function that is indicated, making sure to pass in the
   instruction for further decoding in the function.
   
-In the tests for `task9` a single program is loaded and your `start()`
+In the tests for `task10` a single program is loaded and your `start()`
 method is invoked.  This program does a few calculations and then calls
 the halt trap service routine.  Some more tests of programs are done next
 in the system tests for your assignment.
  
-If your `start()` routine works and the `task9` tests pass, commit your work
+If your `start()` routine works and the `task10` tests pass, commit your work
 and push it to your GitHub classroom repository.
 
 # System Tests: Testing and Running the LC-3 Simulator
@@ -851,7 +914,7 @@ The system tests do the same thing that the `task9` unit test did, load a progra
 and invoke your `start()` method, then test expected results after the program
 halts.  Several programs are loaded and tested.  
 
-You may need to uncomment the code in the `assg03-sim.c` file that calls your
+You will need to uncomment the code in the `assg03-sim.c` file that calls your
 `start()` main simulation loop and recompile.  Once the call to your main loop
 implementation is being invoked, you should be able to run simulations by hand
 and run all of the system tests.
@@ -862,7 +925,7 @@ You can run the system tests by opening a terminal and doing a
 $ make system-tests
 ```
 
-Which will invoke a script that loads several test programs, executs them and then
+Which will invoke a script that loads several test programs, executes them and then
 checks their results.  If all of your system tests are passing, you will be
 awarded the final 5 points for the assignment in your GitHub classroom autograder.
 
@@ -912,7 +975,7 @@ fix issues with your current submission.
    graded.  0 if not satisfied.
 2. 40 points for keeping code that compiles and runs.  A minimum of 50 points
    will be given if at least the first task is completed and passing tests.
-3. 5 to 10 points are awareded for completing each subsequent task 2-8.
+3. 5 to 10 points are awarded for completing each subsequent task 2-10.
 4. +5 bonus pts if all system tests pass and your process simulator produces
    correct output for the given system tests.
 

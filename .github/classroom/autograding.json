@@ -21,7 +21,7 @@
       "points": 15
     },
     {
-      "name": "Task 2: instruction / operand extraction functions",
+      "name": "Task 2: sign_extend function",
       "setup": "make -s",
       "run": "./test --list-test-names-only [task2] | grep . && ./test [task2]",
       "input": "",
@@ -31,17 +31,17 @@
       "points": 10
     },
     {
-      "name": "Task 3: PZN condition flags update",
+      "name": "Task 3: instruction / operand extraction macros",
       "setup": "make -s",
       "run": "./test --list-test-names-only [task3] | grep . && ./test [task3]",
       "input": "",
       "output": "",
       "comparison": "included",
       "timeout": 10,
-      "points": 10
+      "points": 5
     },
     {
-      "name": "Task 4: mathematical operators",
+      "name": "Task 4: PZN condition flags update function",
       "setup": "make -s",
       "run": "./test --list-test-names-only [task4] | grep . && ./test [task4]",
       "input": "",
@@ -51,7 +51,7 @@
       "points": 10
     },
     {
-      "name": "Task 5: load memory access operators ",
+      "name": "Task 5: arithmetic / logic microcode operators",
       "setup": "make -s",
       "run": "./test --list-test-names-only [task5] | grep . && ./test [task5]",
       "input": "",
@@ -61,17 +61,17 @@
       "points": 10
     },
     {
-      "name": "Task 6: store memory access operators",
+      "name": "Task 6: load memory access operators ",
       "setup": "make -s",
       "run": "./test --list-test-names-only [task6] | grep . && ./test [task6]",
       "input": "",
       "output": "",
       "comparison": "included",
       "timeout": 10,
-      "points": 5
+      "points": 10
     },
     {
-      "name": "Task 7: control flow operations",
+      "name": "Task 7: store memory access operators",
       "setup": "make -s",
       "run": "./test --list-test-names-only [task7] | grep . && ./test [task7]",
       "input": "",
@@ -81,9 +81,19 @@
       "points": 5
     },
     {
-      "name": "Task 8: trap service routine implementations",
+      "name": "Task 8: control flow operations",
       "setup": "make -s",
       "run": "./test --list-test-names-only [task8] | grep . && ./test [task8]",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 5
+    },
+    {
+      "name": "Task 9: trap service routine implementations",
+      "setup": "make -s",
+      "run": "./test --list-test-names-only [task9] | grep . && ./test [task9]",
       "input": "",
       "output": "",
       "comparison": "included",
@@ -91,9 +101,9 @@
       "points": 0
     },
     {
-      "name": "Task 9: control store fetch-decode-execute main execution loop",
+      "name": "Task 10: control store fetch-decode-execute main execution loop",
       "setup": "make -s",
-      "run": "./test --list-test-names-only [task9] | grep . && ./test [task9]",
+      "run": "./test --list-test-names-only [task10] | grep . && ./test [task10]",
       "input": "",
       "output": "",
       "comparison": "included",

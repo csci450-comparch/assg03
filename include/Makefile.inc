@@ -1,6 +1,6 @@
 # compiler flags, tools and include variables
 GCC=gcc
-GCC_FLAGS=-Wall -Werror -pedantic -g -std=c11
+GCC_FLAGS=-Wall -Werror -pedantic -g -std=c18
 GPP=g++
 GPP_FLAGS=-Wall -Werror -pedantic
 INCLUDES=-Iinclude
