@@ -307,7 +307,7 @@ simulation.
 
 The LC-3 architecture supports only a limited set of instructions.  The first
 4 bits of every instruction indicate the opcode, thus there are at most
-$2^4 = 16$ possible instructions, of which all but 1 rare defined
+$2^4 = 16$ possible instructions, of which all but 1 are defined
 as opcodes in LC-3.  The remaining 12 bits of each instruction provide 
 parameters, using various addressing modes, for the operation.
 Based on the opcode, we can identify the instruction and understand how to
@@ -344,14 +344,14 @@ the task3 tests for the `OPC` operation are passing.
 ### Macros to extract source and destination registers
 
 Given this same idea, we will now define some macros to extract the
-destination register, which in many instruction is in bit positions 11-9, source
+destination register, which in many instructions is in bit positions 11-9, source
 register 1 which is in often in bit positions 8-6, and source register 2
 in bit positions 2-0.
 
 Start with the source register 2.  Define a macro called `SR2`.  Source register 2 is in the last 3 bits of an instruction, bits 2-0.  So we don't need to shit these bits, we want the 3
 register bits to end up in the 3 least significant bits, and 0's for all higher bits.  So
 for this macro, we need to perform a bitwis and `&` operation.  Using a mask of 
-`0x07` should cause all bits except the bottom 3 to become 0.
+`0x0007` should cause all bits except the bottom 3 to become 0.
 
 Then define a `SR1` macro.  Source register 1 is in bits 8-6.  So you first need to shift
 right 6 positions.  But the bits above 8 in the original instruction contain the opcode and
