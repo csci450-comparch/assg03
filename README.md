@@ -195,7 +195,7 @@ like this:
 
 The LC-3 architecture has $W = 2^{16}$ or 64 kilo-words of memory, and each word
 is size $N = 16$ bits.  There is a constant defined in the `<stdint.h>` C library
-file named `UINT16_MAX` which is equivalent $\text{UINT16\_MAX} = W = 2^{16} = 65535$ .
+file named `UINT16_MAX` which is equivalent `UINT16_MAX` $= W = 2^{16} = 65535$.
 Likewise there is a type defined that holds an unsigned integer 16 bit value
 named `uint16_t`.  All addresses in our LC-3 architecture are 16 bit values that
 we can interpret as unsigned 16 bit integers, thus this type will be the one
@@ -279,10 +279,14 @@ bits (0xFFFF) left by the `size`.  This will shift in 0's to the
 bits from position 0 up to the `size`.  Then you need to perform
 a bitwise or `|` of the original bits with this prepared mask.  Any bit that
 was a 1 in the original bits will get set now for the low order bits, and all of the
-high order bits will be 1 from your shift.  If the bit at the `sign_position`
-was a 0 then nothing needs to be done and you can just return the original
-bits.  This is because this funciton assume that all high bits above the
-`sign_position` have already been masked to 0 when this function is called.
+high order bits will be 1 from your shift.
+
+Likewise if the sign bit to extend is a 0, you should not assume all higher
+bits are cleared.  So for example you could right shift a set of all 1 bits
+(0xFFFF) right by `16 - size`, the purpose is to have a mask with all 0's
+in the bits that need to be cleared, and 1's as a mask.  You can then bitwise
+and this mask to clear the high order bits and thus sign extend the 0 to
+all high order bits.
 
 **NOTE**: This function does not assume that the the higher bits above the
 number of bits being extended have been cleared or set.  So whether sign
